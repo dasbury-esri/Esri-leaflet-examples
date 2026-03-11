@@ -137,21 +137,9 @@
   }
 
   function resolveHostedSldUrl(layerConfig) {
-    if (layerConfig.sldUrl) {
-      return layerConfig.sldUrl;
-    }
-
-    const path = layerConfig.hostedSldPath;
-    if (!path) {
-      return "";
-    }
-
-    const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-    if (isLocalHost) {
-      return "";
-    }
-
-    return new URL(path, window.location.href).toString();
+    // Use an explicit sldUrl only when the server is known to trust that URL.
+    // Many GeoServer deployments reject arbitrary external URLs, including GitHub Pages.
+    return layerConfig.sldUrl || "";
   }
 
   const resolvedPolygonSldUrl = resolveHostedSldUrl(config.layer);
@@ -680,7 +668,7 @@
       if (!hasExplicitViewStateInUrl()) {
         writeExplicitViewState(config.map.center[0], config.map.center[1], config.map.zoom, null);
       }
-      window.L.control.zoom({ position: "topright" }).addTo(state.map);
+      window.L.control.zoom({ position: "bottomright" }).addTo(state.map);
 
       const basemap = createBasemapLayer();
       if (basemap) {
